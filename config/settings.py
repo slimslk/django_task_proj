@@ -42,8 +42,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    #local
+    # 3rd-party
+    'rest_framework',
+    
+    # local
     'task_app.apps.TaskAppConfig'
+
 ]
 
 MIDDLEWARE = [
