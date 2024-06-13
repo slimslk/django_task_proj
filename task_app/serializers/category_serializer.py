@@ -18,7 +18,7 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         name = validated_data.get("name")
-        if not Category.objects.exists(name):
+        if Category.objects.exists(name):
             raise ValidationError(f"{name} is existed. Category name should be unique.")
 
         return Category(**validated_data)
@@ -26,7 +26,7 @@ class CategoryCreateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         if "name" in validated_data:
             name = validated_data.get("name")
-            if not Category.objects.exists(name):
+            if Category.objects.exists(name):
                 raise ValidationError(f"{name} is existed. Category name should be unique.")
 
             instance.name = name
