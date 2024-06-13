@@ -23,8 +23,6 @@ class SubtaskService:
 
     def update_subtask(self, data, subtask_id):
         subtask = self.__check_subtask_existed(pk=subtask_id).first()
-        print(subtask)
-        print(data)
         serializer = SubTaskCreateSerializer(instance=subtask, data=data)
         if not serializer.is_valid():
             raise CreateValidationError(serializer.errors)

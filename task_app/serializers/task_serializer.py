@@ -42,7 +42,6 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         ]
 
     def validate_deadline(self, value):
-        print(value)
         try:
             if timezone.make_aware(datetime.strptime(str(value), "%Y-%m-%d %H:%M:%S+00:00")) < timezone.now():
                 raise serializers.ValidationError(f"Deadline date {value} cannot be at the past.")
@@ -54,7 +53,6 @@ class TaskCreateSerializer(serializers.ModelSerializer):
         if "categories_name" in validated_data:
             categories_data = validated_data.pop("categories_name")
             task = Task.objects.create(**validated_data)
-            print(categories_data)
             for category_data in categories_data:
                 category, created = Category.objects.get_or_create(
                     name=category_data.get("name")
