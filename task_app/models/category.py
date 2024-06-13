@@ -11,4 +11,4 @@ class Category(models.Model):
         db_table = "task_manager_category"
         verbose_name = 'Category'
         verbose_name_plural = 'Categories'
-        unique_together = ("name",)
+        # unique_together = ("name",)

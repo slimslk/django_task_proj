@@ -2,9 +2,9 @@ import datetime
 
 from django.core.paginator import Paginator, InvalidPage
 
-from task_app.exceptions.task_app_exception import BadRequestException, NoContentException
+from task_app.exceptions.task_app_exception import BadRequestException, NoContentException, CreateValidationError
 from task_app.models import Task
-from task_app.serializers.task_serializer import TaskSerializer
+from task_app.serializers.task_serializer import TaskDetailSerializer, TaskCreateSerializer
 
 from django.utils import timezone
 
@@ -16,9 +16,9 @@ class TaskService:
         return self.get_tasks()
 
     def create_new_task(self, task_data: dict):
-        serializer = TaskSerializer(data=task_data)
+        serializer = TaskCreateSerializer(data=task_data)
         if not serializer.is_valid(raise_exception=True):
-            return serializer.errors
+            raise CreateValidationError(serializer.errors)
 
         serializer.save()
         return serializer.data
@@ -63,7 +63,7 @@ class TaskService:
             raise NoContentException()
 
         if len(tasks) < 2:
-            return TaskSerializer(tasks[0]).data
+            return TaskDetailSerializer(tasks[0]).data
 
         if page_number:
             try:
@@ -72,4 +72,4 @@ class TaskService:
             except InvalidPage:
                 raise BadRequestException("Invalid page number")
 
-        return TaskSerializer(tasks, many=True).data
+        return TaskDetailSerializer(tasks, many=True).data

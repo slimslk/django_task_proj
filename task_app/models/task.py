@@ -22,7 +22,7 @@ class Task(models.Model):
         return self.title
 
 
-class SubTask(models.Model):
+class Subtask(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField(blank=True)
     task = models.ForeignKey('Task', related_name='subtasks', on_delete=models.CASCADE)

@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from task_app.models.category import Category
-from task_app.models.task import Task, SubTask
+from task_app.models.task import Task, Subtask
 
 
 @admin.register(Task)
@@ -17,7 +17,7 @@ class TaskAdmin(admin.ModelAdmin):
     get_categories_name.short_description = "Categories"
 
 
-@admin.register(SubTask)
+@admin.register(Subtask)
 class SubTaskAdmin(admin.ModelAdmin):
     search_fields = ('title', 'status', 'deadline')
     list_filter = ('status',)

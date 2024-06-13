@@ -23,3 +23,8 @@ class BadRequestException(TaskAppBaseException):
     def __init__(self, message: str | dict):
         self.msg = message
         super().__init__(message=self.msg, data=self.msg, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class CreateValidationError(TaskAppBaseException):
+    def __init__(self, message: str | dict):
+        super().__init__(message=message, data=message, status_code=status.HTTP_400_BAD_REQUEST)
