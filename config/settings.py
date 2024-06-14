@@ -92,6 +92,9 @@ if env.str('MYSQL'):
             'PASSWORD': env.str('DB_PASSWORD'),
             'HOST': env.str('DB_HOST'),
             'PORT': env.str('DB_PORT')
+        },
+        'test': {
+            'NAME': f"test_{env.str('DB_NAME')}"
         }
     }
 else:
