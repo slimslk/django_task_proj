@@ -1,7 +1,7 @@
 from rest_framework import status
 
 from task_app.constants.exception_message_constants import (
-    NO_CONTENT_EXCEPTION_DATA,
+    NO_CONTENT_EXCEPTION_DATA, NOTHING_TO_UPDATE_MSG, NOTHING_TO_UPDATE_DATA,
 )
 
 
@@ -28,3 +28,9 @@ class BadRequestException(TaskAppBaseException):
 class CreateValidationError(TaskAppBaseException):
     def __init__(self, message: str | dict):
         super().__init__(message=message, data=message, status_code=status.HTTP_400_BAD_REQUEST)
+
+
+class NothingToUpdateException(TaskAppBaseException):
+    def __init__(self):
+        self.msg = NOTHING_TO_UPDATE_MSG
+        super().__init__(message=self.msg, **NOTHING_TO_UPDATE_DATA)

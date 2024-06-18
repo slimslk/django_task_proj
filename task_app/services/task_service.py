@@ -1,30 +1,47 @@
 import datetime
 
-from django.core.paginator import Paginator, InvalidPage
-
-from task_app.exceptions.task_app_exception import BadRequestException, NoContentException, CreateValidationError
-from task_app.models import Task
+from task_app.exceptions.task_app_exception import BadRequestException, CreateValidationError
+from task_app.repositories.task_repository import TaskRepository
 from task_app.serializers.task_serializer import TaskDetailSerializer, TaskCreateSerializer
 
 from django.utils import timezone
+
+from task_app.services.category_service import CategoryService
 
 
 class TaskService:
     __PAGE_SIZE = 2
 
+    def __init__(self, task_repository: TaskRepository, category_service: CategoryService):
+        self.__task_repository = task_repository
+        self.__category_service = category_service
+
     def get_all_tasks(self):
-        return self.get_tasks()
+        tasks = self.__task_repository.get_all_tasks()
+        serializer = TaskDetailSerializer(tasks, many=True)
+        return serializer.data
 
     def create_new_task(self, task_data: dict):
+        categories = []
+        if "categories" in task_data:
+            categories_data = task_data.pop("categories")
+            categories = self.__category_service.check_if_names_contains_in_categories(categories_data)
+
         serializer = TaskCreateSerializer(data=task_data)
         if not serializer.is_valid(raise_exception=True):
             raise CreateValidationError(serializer.errors)
 
-        serializer.save()
+        task = self.__task_repository.create_task(**serializer.validated_data)
+        print("Task ID", task.id)
+        task.categories.add(*categories)
+        serializer = TaskDetailSerializer(task)
+
         return serializer.data
 
     def get_task_by_pk(self, task_pk: int):
-        return self.get_tasks(pk=task_pk)
+        task = self.__task_repository.get_task_by_id(task_pk)
+        serializer = TaskDetailSerializer(task)
+        return serializer.data
 
     def filter_tasks_by_query_params(self, query_params):
         task_filter = {}
@@ -51,25 +68,6 @@ class TaskService:
 
         if is_error:
             raise BadRequestException(message)
-        return self.get_tasks(**task_filter)
-
-    def get_tasks(self, *args, **kwargs):
-        page_number = None
-        if "page" in kwargs:
-            page_number = kwargs.pop("page")
-
-        tasks = Task.objects.filter(**kwargs).all()
-        if not tasks:
-            raise NoContentException()
-
-        if len(tasks) < 2:
-            return TaskDetailSerializer(tasks[0]).data
-
-        if page_number:
-            try:
-                paginator = Paginator(tasks, per_page=self.__PAGE_SIZE)
-                tasks = paginator.page(page_number)
-            except InvalidPage:
-                raise BadRequestException("Invalid page number")
-
-        return TaskDetailSerializer(tasks, many=True).data
+        tasks = self.__task_repository.get_all_tasks_by_filter(**task_filter)
+        serializer = TaskDetailSerializer(data=tasks, many=True)
+        return serializer.data

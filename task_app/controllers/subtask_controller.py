@@ -4,11 +4,15 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from task_app.exceptions.task_app_exception import TaskAppBaseException
+from task_app.repositories.subtask_repository import SubtaskRepository
 from task_app.services.subtask_service import SubtaskService
 
 
 class SubtaskListApiView(APIView):
-    __service = SubtaskService()
+    def __init__(self, **kwargs):
+        subtask_repository = SubtaskRepository()
+        self.__service = SubtaskService(subtask_repository=subtask_repository)
+        super().__init__(**kwargs)
 
     def get(self, request: Request) -> Response:
         try:
@@ -29,7 +33,8 @@ class SubtaskListApiView(APIView):
 
 
 class SubtaskDetailApiView(APIView):
-    __service = SubtaskService()
+    __subtask_repository = SubtaskRepository()
+    __service = SubtaskService(__subtask_repository)
 
     def get(self, request: Request, subtask_id: int) -> Response:
         try:

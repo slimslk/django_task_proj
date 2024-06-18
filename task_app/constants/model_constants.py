@@ -1,7 +1,11 @@
-STATUS_CHOICES = [
-    ('new', 'New'),
-    ('in_progress', 'In progress'),
-    ('pending', 'Pending'),
-    ('blocked', 'Blocked'),
-    ('done', 'Done'),
+TASK_FIELDS = [
+    "title",
+    "description",
+    "categories",
+    "status",
+    "deadline"
+]
+
+CATEGORY_FIELDS = [
+    "name"
 ]

@@ -2,10 +2,14 @@ from django.db.models import QuerySet
 
 from task_app.exceptions.task_app_exception import NoContentException, CreateValidationError
 from task_app.models import Subtask
-from task_app.serializers.sub_task_serializer import SubTaskDetailSerializer, SubTaskCreateSerializer
+from task_app.repositories.subtask_repository import SubtaskRepository
+from task_app.serializers.subtask_serializer import SubTaskDetailSerializer, SubTaskCreateSerializer
 
 
 class SubtaskService:
+    
+    def __init__(self, subtask_repository: SubtaskRepository):
+        self.__subtask_repository = subtask_repository
 
     def get_all_subtask(self):
         return self.get_tasks()
@@ -23,13 +27,12 @@ class SubtaskService:
 
     def update_subtask(self, data, subtask_id):
         subtask = self.__check_subtask_existed(pk=subtask_id).first()
-        serializer = SubTaskCreateSerializer(instance=subtask, data=data)
+        serializer = SubTaskCreateSerializer(instance=subtask, data=data, partial=True)
         if not serializer.is_valid():
             raise CreateValidationError(serializer.errors)
 
         serializer.save()
         return serializer.data
-
 
     def delete(self, subtask_id):
         if subtask := self.__check_subtask_existed(pk=subtask_id):

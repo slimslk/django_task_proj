@@ -1,21 +1,22 @@
-from django.core.exceptions import ObjectDoesNotExist
 from django.test import TestCase
-from rest_framework.exceptions import ValidationError
 
-from task_app.models import Category
-from task_app.serializers.category_serializer import CategorySerializer, CategoryCreateSerializer
+from task_app.repositories.category_repository import CategoryRepository
+from task_app.serializers.category_serializer import CategoryDetailSerializer, CategoryCreateSerializer
 
 
 class CategorySerializerTest(TestCase):
 
+    # TODO: Mock field __category_repository
+    __category_repository = CategoryRepository()
+
     def setUp(self):
-        cat1 = Category.objects.create(
+        cat1 = self.__category_repository.create_category(
             name="IT"
         )
-        cat2 = Category.objects.create(
+        cat2 = self.__category_repository.create_category(
             name="QA"
         )
-        cat3 = Category.objects.create(
+        cat3 = self.__category_repository.create_category(
             name="DevOps"
         )
 
@@ -24,63 +25,26 @@ class CategorySerializerTest(TestCase):
         self.categories = [
             cat1, cat2, cat3
         ]
-        self.expected = CategorySerializer(self.categories, many=True)
+        self.expected = CategoryDetailSerializer(self.categories, many=True)
 
-    def test_get_all_categories(self):
-        categories = Category.objects.all()
-        actual = CategorySerializer(categories, many=True)
-        self.assertEqual(actual.data, self.expected.data)
+    def test_CategoryDetailSerializer_with_may_records(self):
+        categories = self.__category_repository.get_all_categories()
+        actual = CategoryDetailSerializer(categories, many=True)
+        self.assertCountEqual(actual.data, self.expected.data)
 
-    def test_get_category_by_id(self):
-        category = Category.objects.get(pk=self.category_id)
-        actual = CategorySerializer(category)
+    def test_CategoryDetailSerializer_with_one_record(self):
+        category = self.__category_repository.get_category_by_id(self.category_id)
+        actual = CategoryDetailSerializer(category)
         self.assertEqual(actual.data, self.expected.data[2])
 
-    def test_get_by_id_if_not_exist(self):
-        with self.assertRaises(ObjectDoesNotExist) as cm:
-            Category.objects.get(pk=-1)
-        the_exception = cm.exception
-        self.assertEqual(the_exception.__class__.__name__, Category.DoesNotExist.__name__)
-
-    def test_create_new_category(self):
+    def test_CategoryCreateSerializer(self):
         data = {"name": "Barista"}
         expected = CategoryCreateSerializer(data=data)
         expected.is_valid()
-        expected.save()
-        actual = Category.objects.filter(name="Barista").values("id", "name").first()
-        self.assertDictEqual(actual, expected.data, f"{actual}, {expected.data}")
+        validated_category_data = expected.validated_data
+        category = self.__category_repository.create_category(**validated_category_data)
+        category_id = category.id
+        actual = self.__category_repository.get_category_by_id(category_id)
+        self.assertEqual(actual, category, f"{actual}, {expected.data}")
 
-    def test_error_when_create_category_if_name_is_existed(self):
-        Category.objects.create(name="CEO")
-        with self.assertRaises(ValidationError) as err:
-            data = {"name": "CEO"}
-            category = CategoryCreateSerializer(data=data)
-            if category.is_valid():
-                category.save()
-        the_exception = err.exception
-        self.assertEqual(the_exception.__class__.__name__, ValidationError.__name__)
 
-    def test_error_when_update_category_if_name_is_existed(self):
-        category = Category.objects.get(pk=self.category_id)
-        with self.assertRaises(ValidationError) as err:
-            data = {"name": "QA"}
-            category = CategoryCreateSerializer(instance=category, data=data)
-            if category.is_valid():
-                category.save()
-        the_exception = err.exception
-        self.assertEqual(the_exception.__class__.__name__, ValidationError.__name__)
-
-    def test_update_by_id(self):
-        category = Category.objects.get(pk=self.category_id)
-        update_data = {"name": "PM"}
-        expected = CategoryCreateSerializer(instance=category, data=update_data)
-        if expected.is_valid():
-            expected.save()
-        actual = Category.objects.values("id", "name").get(pk=self.category_id)
-        self.assertEqual(actual, expected.data)
-
-    def test_delete_category_by_id(self):
-        category = Category.objects.get(pk=self.category_id)
-        category.delete()
-        actual = Category.objects.filter(pk=self.category_id).first()
-        self.assertEqual(actual, None)

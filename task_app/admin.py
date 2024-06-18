@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 from task_app.models.category import Category
-from task_app.models.task import Task, Subtask
+from task_app.models import Task, Subtask
 
 
 @admin.register(Task)
