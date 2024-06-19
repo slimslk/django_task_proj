@@ -1,11 +1,11 @@
 from django.urls import path
 
-from task_app.controllers.statistic_controller import StatisticListApiView
-from task_app.controllers.task_controller import (
+from task_app.controllers.v1.statistic_controller import StatisticListApiView
+from task_app.controllers.v1.task_controller import (
     TaskListAPIView,
     TaskDetailAPIView
 )
-from task_app.controllers.subtask_controller import (
+from task_app.controllers.v1.subtask_controller import (
     SubtaskListApiView,
     SubtaskDetailApiView
 )

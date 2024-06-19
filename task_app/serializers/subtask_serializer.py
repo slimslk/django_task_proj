@@ -3,7 +3,7 @@ from rest_framework import serializers
 from task_app.models import Subtask
 
 
-class SubTaskCreateSerializer(serializers.ModelSerializer):
+class SubtaskCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subtask
@@ -11,7 +11,7 @@ class SubTaskCreateSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_at"]
 
 
-class SubTaskDetailSerializer(serializers.ModelSerializer):
+class SubtaskDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Subtask

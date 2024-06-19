@@ -4,12 +4,12 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from task_app.exceptions.task_app_exception import TaskAppBaseException
-from task_app.apps import TaskAppConfig
+from task_app.services.statistic_service import StatisticService
 
 
 class StatisticListApiView(APIView):
     def __init__(self, **kwargs):
-        self.__service = TaskAppConfig.statistic_service
+        self.__service = StatisticService()
         super().__init__(**kwargs)
 
     def get(self, request: Request) -> Response:

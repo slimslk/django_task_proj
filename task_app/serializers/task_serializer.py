@@ -5,7 +5,7 @@ from django.utils import timezone
 
 from task_app.exceptions.task_app_exception import BadRequestException
 from task_app.models import Task
-from task_app.serializers.subtask_serializer import SubTaskDetailSerializer
+from task_app.serializers.subtask_serializer import SubtaskDetailSerializer
 
 
 class TaskCreateCategorySerializer(serializers.Serializer):
@@ -39,7 +39,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
-    subtasks = SubTaskDetailSerializer(many=True, read_only=True)
+    subtasks = SubtaskDetailSerializer(many=True, read_only=True)
 
     categories = serializers.SlugRelatedField(
         many=True,

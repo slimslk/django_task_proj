@@ -3,7 +3,7 @@ from django.db.models import QuerySet
 from task_app.exceptions.task_app_exception import NoContentException, CreateValidationError
 from task_app.models import Subtask
 from task_app.repositories.subtask_repository import SubtaskRepository
-from task_app.serializers.subtask_serializer import SubTaskDetailSerializer, SubTaskCreateSerializer
+from task_app.serializers.subtask_serializer import SubtaskDetailSerializer, SubtaskCreateSerializer
 
 
 class SubtaskService:
@@ -15,7 +15,7 @@ class SubtaskService:
         return self.get_tasks()
 
     def create_new_task(self, subtask_data):
-        serializer = SubTaskCreateSerializer(data=subtask_data)
+        serializer = SubtaskCreateSerializer(data=subtask_data)
         if not serializer.is_valid(raise_exception=True):
             raise CreateValidationError(serializer.errors)
 
@@ -27,7 +27,7 @@ class SubtaskService:
 
     def update_subtask(self, data, subtask_id):
         subtask = self.__check_subtask_existed(pk=subtask_id).first()
-        serializer = SubTaskCreateSerializer(instance=subtask, data=data, partial=True)
+        serializer = SubtaskCreateSerializer(instance=subtask, data=data, partial=True)
         if not serializer.is_valid():
             raise CreateValidationError(serializer.errors)
 
@@ -43,9 +43,9 @@ class SubtaskService:
         subtask = self.__check_subtask_existed(**kwargs)
 
         if len(subtask) < 2:
-            return SubTaskDetailSerializer(subtask[0]).data
+            return SubtaskDetailSerializer(subtask[0]).data
 
-        return SubTaskDetailSerializer(subtask, many=True).data
+        return SubtaskDetailSerializer(subtask, many=True).data
 
     def __check_subtask_existed(self, **kwargs) -> QuerySet:
         subtasks = Subtask.objects.filter(**kwargs).all()
