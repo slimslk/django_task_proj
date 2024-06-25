@@ -5,6 +5,7 @@ from rest_framework import filters
 
 from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView, get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 
 from task_app.models import Subtask, Task
 from task_app.serializers.subtask_serializer import SubtaskDetailSerializer, SubtaskCreateSerializer
@@ -21,6 +22,7 @@ class BaseListCreateGenericView(ListCreateAPIView):
     base_model: Task | Subtask = None
     serializer_get: TaskDetailSerializer | SubtaskDetailSerializer = None
     serializer_post: TaskCreateSerializer | SubtaskCreateSerializer = None
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     pagination_class = AppPageNumberPaginator
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
@@ -55,6 +57,7 @@ class BaseRetrieveUpdateDeleteGenericView(RetrieveUpdateDestroyAPIView):
     base_model: Task | Subtask = None
     serializer_get: TaskDetailSerializer | SubtaskDetailSerializer = None
     serializer_put: TaskCreateSerializer | SubtaskCreateSerializer = None
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         assert self.base_model is not None, (

@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, AllowAny
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -11,6 +12,8 @@ from task_app.services.task_service import TaskService
 
 
 class TaskListAPIView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
     def __init__(self, **kwargs):
         task_repository = TaskRepository()
         category_repository = CategoryRepository()
@@ -41,6 +44,7 @@ class TaskListAPIView(APIView):
 
 
 class TaskDetailAPIView(APIView):
+    permission_classes = [AllowAny]
 
     def __init__(self, **kwargs):
         task_repository = TaskRepository()

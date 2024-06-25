@@ -4,6 +4,7 @@ from rest_framework.decorators import action
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticatedOrReadOnly
 
 from task_app.models import Category
 from task_app.serializers.category_serializer import CategoryCreateSerializer
@@ -12,6 +13,7 @@ from task_app.serializers.category_serializer import CategoryCreateSerializer
 class CategoryViewSet(ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategoryCreateSerializer
+    permission_classes = [IsAuthenticatedOrReadOnly]
 
     @action(detail=False, methods=["GET"], url_path='count')
     def count_tasks(self, request: Request) -> Response:

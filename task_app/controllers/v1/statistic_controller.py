@@ -2,12 +2,15 @@ from rest_framework import status
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.permissions import AllowAny
 
 from task_app.exceptions.task_app_exception import TaskAppBaseException
 from task_app.services.statistic_service import StatisticService
 
 
 class StatisticListApiView(APIView):
+    permission_classes = [AllowAny]
+
     def __init__(self, **kwargs):
         self.__service = StatisticService()
         super().__init__(**kwargs)

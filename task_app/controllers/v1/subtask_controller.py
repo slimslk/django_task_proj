@@ -1,4 +1,5 @@
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, IsAuthenticated
 from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.views import APIView
@@ -9,6 +10,7 @@ from task_app.services.subtask_service import SubtaskService
 
 
 class SubtaskListApiView(APIView):
+    permission_classes = [IsAuthenticatedOrReadOnly]
     def __init__(self, **kwargs):
         subtask_repository = SubtaskRepository()
         self.__service = SubtaskService(subtask_repository=subtask_repository)
@@ -35,6 +37,7 @@ class SubtaskListApiView(APIView):
 class SubtaskDetailApiView(APIView):
     __subtask_repository = SubtaskRepository()
     __service = SubtaskService(__subtask_repository)
+    permission_classes = [IsAuthenticated]
 
     def get(self, request: Request, subtask_id: int) -> Response:
         try:
