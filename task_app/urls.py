@@ -18,5 +18,5 @@ urlpatterns = [
     path('subtasks/', SubtaskListApiView.as_view()),
     path('subtasks/<int:subtask_id>/', SubtaskDetailApiView.as_view()),
     path('token/', TokenObtainPairView.as_view()),
-    path('token/refresh/', TokenRefreshView.as_view())
+    path('token/refresh/', TokenRefreshView.as_view()),
 ]

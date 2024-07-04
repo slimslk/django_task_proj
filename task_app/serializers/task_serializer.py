@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from task_app.exceptions.task_app_exception import BadRequestException
 from task_app.models import Task
+from task_app.serializers.category_serializer import CategoryCreateSerializer
 from task_app.serializers.subtask_serializer import SubtaskDetailSerializer
 
 
@@ -28,6 +29,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
             "deadline",
             "categories",
         ]
+        read_only_fields = ['owner']
 
     def validate_deadline(self, value):
         try:
@@ -36,6 +38,14 @@ class TaskCreateSerializer(serializers.ModelSerializer):
             return value
         except ValueError as err:
             raise BadRequestException(str(err))
+
+
+class AllTasksSerializer(serializers.ModelSerializer):
+    categories = CategoryCreateSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Task
+        fields = "__all__"
 
 
 class TaskDetailSerializer(serializers.ModelSerializer):
